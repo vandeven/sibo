@@ -1,13 +1,13 @@
 # SIBO Telegram Bot & Restaurant PDF Generator - Agent Notes
 
 ## Overview
-Automated Telegram bot service hosted on Google Cloud Run. The bot accepts Telegram messages containing a target **City** and optional **Meal Type / Cuisine**, sends an immediate confirmation back to the user in English, instructs Gemini (`gemini-2.5-flash`) to perform Google Search Grounding for SIBO-friendly restaurants, formats the findings into a structured PDF report, and sends the PDF back via Telegram.
+Automated Telegram bot service hosted on Google Cloud Run. The bot accepts Telegram messages containing a target **City** and optional **Meal Type / Cuisine**, sends an immediate confirmation back to the user in English, instructs Gemini (`gemini-2.0-flash`) to perform Google Search Grounding for SIBO-friendly restaurants, formats the findings into a structured PDF report, and sends the PDF back via Telegram.
 
 ---
 
 ## Technical Specifications & Stack
 
-- **Language / Runtime**: Python `3.14.7` (configured via `.python-version` / runtime environment for GCP Buildpack).
+- **Language / Runtime**: Python `3.13.1` (configured via `.python-version` / runtime environment for GCP Buildpack).
 - **Deployment Platform**: Google Cloud Run using Google Cloud Buildpacks.
 - **Cloud Run Authentication Setting**: `--allow-unauthenticated` at the GCP IAM level (required because Telegram Bot API cannot generate Google Cloud IAM identity tokens). Security is enforced at the Application Level via Secret Tokens and User Whitelisting.
 - **Default Language**: English (PDF reports and Telegram notification messages).
@@ -17,7 +17,7 @@ Automated Telegram bot service hosted on Google Cloud Run. The bot accepts Teleg
   - `TELEGRAM_WEBHOOK_SECRET`: Secret token for webhook validation (`X-Telegram-Bot-Api-Secret-Token`).
   - `ALLOWED_TELEGRAM_USER_IDS`: Comma-separated list of allowed Telegram user IDs for multi-user access (e.g. `"123456789,987654321,555444333"`).
 - **Trigger / Ingress**: Telegram Bot API Webhook endpoint (`HTTP POST /webhook/{secret_path}`).
-- **LLM Engine**: `gemini-2.5-flash` via official `google-genai` SDK with mandatory Web Search grounding (`google_search`).
+- **LLM Engine**: `gemini-2.0-flash` via official `google-genai` SDK with mandatory Web Search grounding (`google_search`).
 - **PDF Generation**: `fpdf2` (Pure Python, free, open-source, actively maintained, lightweight with no C/binary system dependencies).
 - **Delivery API**: Telegram Bot API HTTP endpoints (`sendMessage` and `sendDocument`).
 
@@ -47,6 +47,16 @@ Application-level verification ensures only legitimate Telegram requests are pro
 
 4. **Rate Limiting & Throttling**:
    - Implement simple per-user or global rate limiting (e.g., maximum 1 PDF research request per user every 30 seconds) to avoid spam/looping expenses.
+
+---
+
+## Health Check & Dynamic Version Tracking
+The `/health` endpoint dynamically returns:
+- `status`: `"healthy"`
+- `version`: Application semantic version (e.g. `"1.0.0"`)
+- `commit`: Dynamic Git Commit SHA (retrieved from `COMMIT_SHA` / `K_REVISION` environment variables in Cloud Run, or fallback to local `git rev-parse --short HEAD`)
+- `python_version`: Current Python runtime version
+- `deployment`: Infrastructure metadata (`google-cloud-run-buildpacks`)
 
 ---
 
@@ -84,7 +94,7 @@ Each restaurant listing in both top-5 sections must include:
    - Responds `HTTP 200 OK` to Telegram within timeout window.
 
 2. **Async Research & Gemini Search Grounding**:
-   - Executes Gemini `gemini-2.5-flash` request with Google Search Grounding enabled (`tools=[{"google_search": {}}]`).
+   - Executes Gemini `gemini-2.0-flash` request with Google Search Grounding enabled (`tools=[{"google_search": {}}]`).
    - Prompts Gemini to return structured JSON matching the SIBO restaurant criteria (Top 5 by Rating & Top 5 by Price).
 
 3. **PDF Generation (`fpdf2`)**:

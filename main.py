@@ -108,9 +108,19 @@ async def process_sibo_request_background(chat_id: int, city: str, meal_type: Op
 @app.get("/health")
 def health_check():
     """Health check endpoint for GCP Cloud Run container probing."""
+    commit_sha = os.environ.get("COMMIT_SHA") or os.environ.get("K_REVISION") or ""
+    if not commit_sha:
+        try:
+            import subprocess
+            commit_sha = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], text=True).strip()
+        except Exception:
+            commit_sha = "unknown"
+
     return {
         "status": "healthy",
-        "python_version": "3.12.8",
+        "version": "1.0.0",
+        "commit": commit_sha,
+        "python_version": "3.13.1",
         "deployment": "google-cloud-run-buildpacks"
     }
 
