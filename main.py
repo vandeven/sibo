@@ -110,7 +110,7 @@ def health_check():
     """Health check endpoint for GCP Cloud Run container probing."""
     return {
         "status": "healthy",
-        "python_version": "3.14.7",
+        "python_version": "3.12.8",
         "deployment": "google-cloud-run-buildpacks"
     }
 
