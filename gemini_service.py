@@ -83,7 +83,7 @@ def research_sibo_restaurants(city: str, meal_type: Optional[str] = None) -> Dic
         f"Return the research results strictly as the requested JSON object."
     )
 
-    candidate_models = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-2.5-pro"]
+    candidate_models = ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-1.5-flash"]
     last_error = None
 
     for model_name in candidate_models:
