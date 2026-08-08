@@ -12,3 +12,6 @@ steps:
       - '--allow-unauthenticated'
       - '--set-build-env-vars=GOOGLE_RUNTIME_VERSION=3.13.1,GOOGLE_RUNTIME_IMAGE_REGION=europe-west1'
       - '--set-secrets=TELEGRAM_BOT_TOKEN=TELEGRAM_BOT_TOKEN:latest,GEMINI_API_KEY=GEMINI_API_KEY:latest,TELEGRAM_WEBHOOK_SECRET=TELEGRAM_WEBHOOK_SECRET:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
