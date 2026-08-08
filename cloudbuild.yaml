@@ -1,13 +1,13 @@
 steps:
-  # 1. Build container image using GCP Buildpack
+  # Build container image using official Google Cloud Buildpack (Ubuntu 22)
   - name: 'gcr.io/k8s-skaffold/pack'
     args:
       - 'build'
       - 'europe-west1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/sibo:$COMMIT_SHA'
-      - '--builder=gcr.io/buildpacks/builder:v1'
+      - '--builder=gcr.io/buildpacks/builder:google-22'
       - '--env=GOOGLE_RUNTIME_VERSION=3.13.1'
 
-  # 2. Deploy built container image to Cloud Run
+  # Deploy built container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
