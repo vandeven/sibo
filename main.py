@@ -31,6 +31,18 @@ def parse_city_and_meal_type(text: str) -> Tuple[str, Optional[str]]:
     return parts[0], parts[1]
 
 
+def get_current_commit_sha() -> str:
+    """Helper function to retrieve current commit SHA."""
+    commit = os.environ.get("COMMIT_SHA") or os.environ.get("K_REVISION") or ""
+    if not commit:
+        try:
+            import subprocess
+            commit = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], text=True).strip()
+        except Exception:
+            commit = "unknown"
+    return commit
+
+
 def handle_user_command(text: str, user_name: str = "User") -> str:
     """
     Handles slash commands (/start, /help, /status).
@@ -46,7 +58,7 @@ def handle_user_command(text: str, user_name: str = "User") -> str:
             "• `Amsterdam` (searches full menus across top restaurants)\n"
             "• `Wageningen Italian` (searches for Italian SIBO options)\n"
             "• `Rotterdam Sushi`\n\n"
-            "Running on Python 3.14.7 | Google Cloud Run"
+            "Running on Python 3.13.1 | Google Cloud Run"
         )
     elif cmd.startswith("/help"):
         return (
@@ -57,7 +69,11 @@ def handle_user_command(text: str, user_name: str = "User") -> str:
             "Or send any city name (e.g. `Utrecht` or `Groningen Lunch`) to generate a PDF guide!"
         )
     elif cmd.startswith("/status"):
-        return "✅ Bot is Healthy & Running on Google Cloud Run!"
+        commit = get_current_commit_sha()
+        return (
+            "✅ *Bot Status:* Healthy & Running on Google Cloud Run\n"
+            f"📌 *Commit SHA / Revision:* `{commit}`"
+        )
     else:
         return f"Echo test: {text}"
 
@@ -108,18 +124,10 @@ async def process_sibo_request_background(chat_id: int, city: str, meal_type: Op
 @app.get("/health")
 def health_check():
     """Health check endpoint for GCP Cloud Run container probing."""
-    commit_sha = os.environ.get("COMMIT_SHA") or os.environ.get("K_REVISION") or ""
-    if not commit_sha:
-        try:
-            import subprocess
-            commit_sha = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], text=True).strip()
-        except Exception:
-            commit_sha = "unknown"
-
     return {
         "status": "healthy",
         "version": "1.0.0",
-        "commit": commit_sha,
+        "commit": get_current_commit_sha(),
         "python_version": "3.13.1",
         "deployment": "google-cloud-run-buildpacks"
     }
