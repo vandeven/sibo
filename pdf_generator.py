@@ -33,13 +33,15 @@ def clean_text(text: str) -> str:
 def render_restaurant_section(pdf: SIBORepdf, title: str, restaurants: List[Dict[str, Any]]):
     pdf.set_font("Helvetica", "B", 14)
     pdf.set_text_color(40, 116, 166)  # Blue section header
-    pdf.cell(0, 10, clean_text(title), new_x="LMARGIN", new_y="NEXT")
+    pdf.set_x(pdf.l_margin)
+    pdf.cell(pdf.epw, 10, clean_text(title), new_x="LMARGIN", new_y="NEXT")
     pdf.ln(2)
 
     if not restaurants:
         pdf.set_font("Helvetica", "I", 10)
         pdf.set_text_color(100, 100, 100)
-        pdf.cell(0, 8, "No restaurants found for this category.", new_x="LMARGIN", new_y="NEXT")
+        pdf.set_x(pdf.l_margin)
+        pdf.cell(pdf.epw, 8, "No restaurants found for this category.", new_x="LMARGIN", new_y="NEXT")
         pdf.ln(4)
         return
 
@@ -53,11 +55,13 @@ def render_restaurant_section(pdf: SIBORepdf, title: str, restaurants: List[Dict
         pdf.set_fill_color(240, 244, 248)
         pdf.set_font("Helvetica", "B", 11)
         pdf.set_text_color(20, 20, 20)
-        pdf.cell(0, 8, f" {idx}. {name}  |  Rating: {rating}  |  Price: {price_lvl}", fill=True, new_x="LMARGIN", new_y="NEXT")
+        pdf.set_x(pdf.l_margin)
+        pdf.cell(pdf.epw, 8, f" {idx}. {name}  |  Rating: {rating}  |  Price: {price_lvl}", fill=True, new_x="LMARGIN", new_y="NEXT")
 
         pdf.set_font("Helvetica", "", 9)
         pdf.set_text_color(80, 80, 80)
-        pdf.cell(0, 6, f"   Address: {address}", new_x="LMARGIN", new_y="NEXT")
+        pdf.set_x(pdf.l_margin)
+        pdf.cell(pdf.epw, 6, f"   Address: {address}", new_x="LMARGIN", new_y="NEXT")
         pdf.ln(2)
 
         # SIBO Meals List
@@ -65,7 +69,8 @@ def render_restaurant_section(pdf: SIBORepdf, title: str, restaurants: List[Dict
         if meals:
             pdf.set_font("Helvetica", "B", 9)
             pdf.set_text_color(30, 30, 30)
-            pdf.cell(0, 5, "   Recommended SIBO-Friendly Meals:", new_x="LMARGIN", new_y="NEXT")
+            pdf.set_x(pdf.l_margin)
+            pdf.cell(pdf.epw, 5, "   Recommended SIBO-Friendly Meals:", new_x="LMARGIN", new_y="NEXT")
 
             for meal in meals:
                 m_name = clean_text(meal.get("meal_name", "Meal"))
@@ -75,17 +80,20 @@ def render_restaurant_section(pdf: SIBORepdf, title: str, restaurants: List[Dict
 
                 pdf.set_font("Helvetica", "B", 9)
                 pdf.set_text_color(40, 40, 40)
-                pdf.multi_cell(0, 5, f"   - {m_name} ({m_price})")
+                pdf.set_x(pdf.l_margin)
+                pdf.multi_cell(pdf.epw, 5, f"   - {m_name} ({m_price})", new_x="LMARGIN", new_y="NEXT")
 
                 if m_rationale:
                     pdf.set_font("Helvetica", "", 9)
                     pdf.set_text_color(70, 70, 70)
-                    pdf.multi_cell(0, 4.5, f"     Why SIBO-safe: {m_rationale}")
+                    pdf.set_x(pdf.l_margin)
+                    pdf.multi_cell(pdf.epw, 4.5, f"     Why SIBO-safe: {m_rationale}", new_x="LMARGIN", new_y="NEXT")
 
                 if m_waiter:
                     pdf.set_font("Helvetica", "I", 9)
                     pdf.set_text_color(180, 40, 40)  # Red accent for waiter instructions
-                    pdf.multi_cell(0, 4.5, f"     Waiter note: \"{m_waiter}\"")
+                    pdf.set_x(pdf.l_margin)
+                    pdf.multi_cell(pdf.epw, 4.5, f"     Waiter note: \"{m_waiter}\"", new_x="LMARGIN", new_y="NEXT")
 
                 pdf.ln(1)
         pdf.ln(4)
