@@ -83,37 +83,44 @@ def research_sibo_restaurants(city: str, meal_type: Optional[str] = None) -> Dic
         f"Return the research results strictly as the requested JSON object."
     )
 
-    try:
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=user_prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=SYSTEM_PROMPT,
-                tools=[types.Tool(google_search=types.GoogleSearch())],
-                temperature=0.3,
+    candidate_models = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-2.5-pro"]
+    last_error = None
+
+    for model_name in candidate_models:
+        try:
+            logger.info(f"Attempting Gemini search grounding with model: {model_name}")
+            response = client.models.generate_content(
+                model=model_name,
+                contents=user_prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=SYSTEM_PROMPT,
+                    tools=[types.Tool(google_search=types.GoogleSearch())],
+                    temperature=0.3,
+                )
             )
-        )
 
-        text_content = response.text.strip()
-        # Clean markdown formatting if present
-        if text_content.startswith("```json"):
-            text_content = text_content[7:]
-        if text_content.startswith("```"):
-            text_content = text_content[3:]
-        if text_content.endswith("```"):
-            text_content = text_content[:-3]
-        text_content = text_content.strip()
+            text_content = response.text.strip()
+            # Clean markdown formatting if present
+            if text_content.startswith("```json"):
+                text_content = text_content[7:]
+            if text_content.startswith("```"):
+                text_content = text_content[3:]
+            if text_content.endswith("```"):
+                text_content = text_content[:-3]
+            text_content = text_content.strip()
 
-        data = json.loads(text_content)
-        return data
+            data = json.loads(text_content)
+            return data
 
-    except Exception as e:
-        logger.error(f"Error researching SIBO restaurants with Gemini: {e}")
-        # Return fallback structured response on error
-        return {
-            "city": city,
-            "query_meal_type": meal_type or "General Menu",
-            "top_rating": [],
-            "top_price": [],
-            "error": str(e)
-        }
+        except Exception as e:
+            logger.warning(f"Gemini model '{model_name}' failed: {e}. Trying fallback...")
+            last_error = e
+
+    logger.error(f"All Gemini candidate models failed. Last error: {last_error}")
+    return {
+        "city": city,
+        "query_meal_type": meal_type or "General Menu",
+        "top_rating": [],
+        "top_price": [],
+        "error": str(last_error)
+    }
