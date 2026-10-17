@@ -34,6 +34,7 @@ class FakeResearcher:
         return self._report
 
 
+
 def make_restaurant(name: str, distance_km: float | None = None) -> Restaurant:
     return Restaurant(
         name=name,
