@@ -8,7 +8,7 @@ from pydantic import ValidationError
 
 from sibo_bot.models import SearchQuery
 from sibo_bot.telegram import LOCATION_KEYBOARD
-from sibo_bot.version import get_commit_sha
+from sibo_bot.version import APP_VERSION, get_commit_sha
 
 PENDING_CUISINE_TTL_SECONDS = 10 * 60
 
@@ -58,8 +58,12 @@ HELP_TEXT = (
     "• <code>/near sushi</code> then share your location to search a cuisine near you\n\n"
     "You'll get a PDF with the top 5 best-rated and top 5 cheapest restaurants, the SIBO-friendly "
     "dishes and what to ask the waiter.\n\n"
-    "<b>Commands:</b> /start, /help, /near, /status"
+    "<b>Commands:</b> /start, /help, /near, /status, /version"
 )
+
+
+def version_reply() -> Reply:
+    return Reply(f"🏷️ <b>Version:</b> {APP_VERSION}\n📌 <b>Commit:</b> <code>{escape(get_commit_sha())}</code>")
 
 
 class MessageRouter:
@@ -72,6 +76,8 @@ class MessageRouter:
     def route(self, msg: IncomingMessage) -> Reply | SearchQuery:
         if msg.latitude is not None and msg.longitude is not None:
             return SearchQuery(latitude=msg.latitude, longitude=msg.longitude, cuisine=self._pop_cuisine(msg.chat_id))
+        if msg.text.lower() == "version":
+            return version_reply()
         if msg.text.startswith("/"):
             return self._command(msg)
         try:
@@ -92,6 +98,8 @@ class MessageRouter:
             return Reply(f"📍 Share your location and I'll find SIBO-friendly {what} near you.", LOCATION_KEYBOARD)
         if command == "/status":
             return Reply(f"✅ <b>Bot status:</b> healthy\n📌 <b>Commit:</b> <code>{escape(get_commit_sha())}</code>")
+        if command == "/version":
+            return version_reply()
         return Reply(HELP_TEXT, LOCATION_KEYBOARD)
 
     def _pop_cuisine(self, chat_id: int) -> str | None:

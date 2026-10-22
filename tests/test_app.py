@@ -8,6 +8,7 @@ from sibo_bot.config import settings
 from sibo_bot.models import SearchQuery
 from sibo_bot.rate_limit import Cooldown
 from sibo_bot.research import ResearchError
+from sibo_bot.version import APP_VERSION
 
 from conftest import FakeResearcher, FakeTelegram
 
@@ -50,6 +51,12 @@ def test_health(client):
     data = client.get("/health").json()
     assert data["status"] == "healthy"
     assert data["python_version"] == platform.python_version()
+
+
+def test_version(client):
+    data = client.get("/version").json()
+    assert data["version"] == APP_VERSION
+    assert data["commit"]
 
 
 def test_rejects_invalid_secret(client, telegram):

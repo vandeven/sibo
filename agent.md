@@ -52,6 +52,9 @@ Application-level verification ensures only legitimate Telegram requests are pro
 ---
 
 ## Health Check & Dynamic Version Tracking
+The `/version` endpoint returns `version` and `commit`; the same info is sent in Telegram when a user types `version` or `/version`.
+`APP_VERSION` in `sibo_bot/version.py` gets its patch number bumped on every commit by `.githooks/pre-commit` (enable once per clone: `git config core.hooksPath .githooks`).
+
 The `/health` endpoint dynamically returns:
 - `status`: `"healthy"`
 - `version`: Application semantic version (e.g. `"1.0.0"`)

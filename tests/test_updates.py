@@ -3,6 +3,7 @@ from pydantic import ValidationError
 
 from sibo_bot.models import SearchQuery
 from sibo_bot.telegram import LOCATION_KEYBOARD
+from sibo_bot.version import APP_VERSION
 from sibo_bot.updates import PENDING_CUISINE_TTL_SECONDS, IncomingMessage, MessageRouter, Reply, parse_update
 
 
@@ -77,6 +78,12 @@ def test_commands():
     assert "How to use me" in router.route(text_msg("/help@SiboBot")).html
     assert "healthy" in router.route(text_msg("/status")).html
     assert "How to use me" in router.route(text_msg("/unknown")).html
+
+
+@pytest.mark.parametrize("text", ["version", "Version", "/version", "/version@SiboBot"])
+def test_version_reply(text):
+    reply = MessageRouter().route(text_msg(text))
+    assert isinstance(reply, Reply) and APP_VERSION in reply.html
 
 
 def test_user_text_is_html_escaped():

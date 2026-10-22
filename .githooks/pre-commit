@@ -1,0 +1,12 @@
+#!/bin/sh
+# Bumps the patch number of APP_VERSION in sibo_bot/version.py on every commit.
+# Enable once per clone with: git config core.hooksPath .githooks
+set -e
+file=sibo_bot/version.py
+current=$(sed -n 's/^APP_VERSION = "\([0-9]*\)\.\([0-9]*\)\.\([0-9]*\)".*/\1 \2 \3/p' "$file")
+[ -n "$current" ] || { echo "pre-commit: APP_VERSION not found in $file" >&2; exit 1; }
+set -- $current
+next="$1.$2.$(($3 + 1))"
+sed -i "s/^APP_VERSION = \"[^\"]*\"/APP_VERSION = \"$next\"/" "$file"
+git add "$file"
+echo "pre-commit: version bumped to $next"

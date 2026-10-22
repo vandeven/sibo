@@ -80,6 +80,10 @@ def create_app(
             "deployment": "google-cloud-run-buildpacks",
         }
 
+    @app.get("/version")
+    def version():
+        return {"version": APP_VERSION, "commit": get_commit_sha()}
+
     @app.post("/telegram/webhook")
     async def telegram_webhook(
         request: Request,
