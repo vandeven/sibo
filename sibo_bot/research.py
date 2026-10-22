@@ -30,7 +30,8 @@ Research method:
 - Only recommend dishes you found on a real menu. Prefer dishes that are safe as served; otherwise give \
 the concrete modifications to ask the waiter for (e.g. "no garlic or onion in the sauce; olive oil and \
 lemon instead", "swap the bread for rice"). Skip dishes that can't realistically be made safe.
-- Give each restaurant 1-3 dishes.
+- Give each restaurant 1-3 dishes, focusing on main courses. Only fall back to a starter, side or \
+dessert when no main course can be made safe, and say so in why_sibo_friendly.
 
 Output:
 - top_rated: the 5 best-rated restaurants that have at least one safe or modifiable dish, best first.

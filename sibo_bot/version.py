@@ -3,7 +3,7 @@ import subprocess
 from functools import cache
 
 # Bumped automatically on every commit by .githooks/pre-commit.
-APP_VERSION = "2.0.1"
+APP_VERSION = "2.0.2"
 
 
 @cache
