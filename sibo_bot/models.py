@@ -5,7 +5,10 @@ from pydantic import BaseModel, Field, model_validator
 
 class Dish(BaseModel):
     name: str
-    price: str = Field(description="Menu price including currency symbol, e.g. '€14.50'. 'unknown' if not found.")
+    price: str = Field(
+        description="Menu price in euros, e.g. '€14.50'. Prices in another currency are converted at the current "
+        "exchange rate and marked approximate, e.g. '~€12'. 'unknown' if not found."
+    )
     why_sibo_friendly: str = Field(description="Why this dish is (or becomes) low-FODMAP / low-fermentation.")
     modifications: list[str] = Field(
         description="Concrete changes to request from the waiter to make the dish SIBO-friendly. "
@@ -17,7 +20,9 @@ class Restaurant(BaseModel):
     name: str
     address: str
     rating: str = Field(description="Average review rating with source scale, e.g. '4.6/5'.")
-    price_level: str = Field(description="Price level in words plus typical main-course price, e.g. 'moderate (mains €15-22)'.")
+    price_level: str = Field(
+        description="Price level in words plus typical main-course price in euros, e.g. 'moderate (mains €15-22)'."
+    )
     distance_km: float | None = Field(
         default=None, description="Distance from the user's coordinates in km. Only for location searches."
     )

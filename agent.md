@@ -1,7 +1,7 @@
 # SIBO Telegram Bot & Restaurant PDF Generator - Agent Notes
 
 ## Overview
-Automated Telegram bot service hosted on Google Cloud Run. The bot accepts Telegram messages containing a target **City** and optional **Meal Type / Cuisine**, or a shared **Telegram location** (optionally preceded by `/near <cuisine>`), sends an immediate confirmation back to the user in English, asks Claude (`claude-opus-5-5`, with the server-side web search tool and structured outputs) to research SIBO-friendly restaurants, formats the findings into a structured PDF report, and sends the PDF back via Telegram.
+Automated Telegram bot service hosted on Google Cloud Run. The bot accepts Telegram messages containing a target **City** and optional **Meal Type / Cuisine**, or a shared **Telegram location** (optionally preceded by `/near <cuisine>`), sends an immediate confirmation back to the user in English, asks Claude (`claude-sonnet-5-5` by default, with the server-side web search tool and structured outputs) to research SIBO-friendly restaurants, formats the findings into a structured PDF report, and sends the PDF back via Telegram.
 
 ---
 
@@ -14,7 +14,7 @@ Automated Telegram bot service hosted on Google Cloud Run. The bot accepts Teleg
 - **Environment Configuration & Secrets**: Standard Cloud Run Environment Variables:
   - `TELEGRAM_BOT_TOKEN`: Token issued by Telegram @BotFather.
   - `ANTHROPIC_API_KEY`: Claude API key.
-  - Optional: `CLAUDE_MODEL` (default `claude-opus-5-5`), `CLAUDE_EFFORT` (default `medium`), `WEB_SEARCH_MAX_USES` (default 15), `SEARCH_RADIUS_KM` (default 2), `RATE_LIMIT_SECONDS` (default 30).
+  - Optional: `CLAUDE_MODEL` (default `claude-sonnet-5-5`), `CLAUDE_EFFORT` (default `medium`), `WEB_SEARCH_MAX_USES` (default 8), `SEARCH_RADIUS_KM` (default 2), `RATE_LIMIT_SECONDS` (default 30).
   - `TELEGRAM_WEBHOOK_SECRET`: Secret token for webhook validation (`X-Telegram-Bot-Api-Secret-Token`).
   - `ALLOWED_TELEGRAM_USER_IDS`: Comma-separated list of allowed Telegram user IDs for multi-user access (e.g. `"123456789,987654321,555444333"`).
 - **Trigger / Ingress**: Telegram Bot API Webhook endpoint (`HTTP POST /telegram/webhook`).

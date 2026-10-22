@@ -7,9 +7,9 @@ class Settings(BaseSettings):
     allowed_telegram_user_ids: str = ""
 
     anthropic_api_key: str = ""
-    claude_model: str = "claude-opus-5-5"
+    claude_model: str = "claude-sonnet-5-5"
     claude_effort: str = "medium"
-    web_search_max_uses: int = 15
+    web_search_max_uses: int = 8
 
     search_radius_km: float = 2.0
     rate_limit_seconds: float = 30.0

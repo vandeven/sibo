@@ -38,6 +38,8 @@ Output:
 modifiable dish, cheapest first.
 - A restaurant may appear in both lists. Return fewer than 5 only if you truly cannot find more, and \
 explain why in notes.
+- Give every price in euros (€). If a menu uses another currency, convert it at the current exchange \
+rate and mark it approximate with '~' (e.g. '~€12').
 - Write everything in English."""
 
 
